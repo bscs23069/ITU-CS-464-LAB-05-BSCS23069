@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
+    public float rotationSpeed = 90f;
+
+    private void Update()
+    {
+        transform.Rotate(0f, rotationSpeed * Time.deltaTime, 0f);
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -12,12 +18,17 @@ public class Coin : MonoBehaviour
             if (GameManager.instance != null)
             {
                 GameManager.instance.AddScore(1);
-                Destroy(gameObject);
+                
             }
-            else
+            Spawner spawner = FindFirstObjectByType<Spawner>();
+
+            if (spawner != null)
             {
-                Debug.LogError("GameManager instance is missing!");
+                spawner.SpawnCoin();
             }
+
+            Destroy(gameObject);
         }
     }
+   
 }
