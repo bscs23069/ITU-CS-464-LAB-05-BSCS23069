@@ -13,7 +13,9 @@ public class Spawner : MonoBehaviour
     public float normalCoinY = 3.5f;
 
     public int numberOfBlueCoins = 50;
-    public float blueCoinY = 0.5f;
+    public float blueCoinY = 3.5f;
+    // the walls are at 15, so keep the ring a bit inside them
+    public float arenaLimit = 14f;
 
     private int normalCoinsCollected = 0;
     private int redCoinScore;
@@ -78,10 +80,11 @@ public class Spawner : MonoBehaviour
             z
         );
 
+        // use the prefab's rotation so the coin stands up
         Instantiate(
             prefab,
             position,
-            Quaternion.identity
+            prefab.transform.rotation
         );
     }
 
@@ -108,16 +111,20 @@ public class Spawner : MonoBehaviour
                 i * (360f / numberOfBlueCoins) *
                 Mathf.Deg2Rad;
 
-            Vector3 offset = new Vector3(
-                Mathf.Cos(angle) * circleRadius,
+            Vector3 position = new Vector3(
+                playerPosition.x + Mathf.Cos(angle) * circleRadius,
                 blueCoinY,
-                Mathf.Sin(angle) * circleRadius
+                playerPosition.z + Mathf.Sin(angle) * circleRadius
             );
+
+            // near a wall part of the ring would be outside, so pull it back in
+            position.x = Mathf.Clamp(position.x, -arenaLimit, arenaLimit);
+            position.z = Mathf.Clamp(position.z, -arenaLimit, arenaLimit);
 
             Instantiate(
                 blueCoinPrefab,
-                playerPosition + offset,
-                Quaternion.identity
+                position,
+                blueCoinPrefab.transform.rotation
             );
         }
 
